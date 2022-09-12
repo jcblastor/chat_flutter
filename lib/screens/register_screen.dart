@@ -1,6 +1,10 @@
+import 'package:chat_app/services/services.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_app/widgets/widgets.dart';
+import 'package:provider/provider.dart';
+
+import '../helpers/show_alert.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -51,6 +55,8 @@ class __FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -59,13 +65,13 @@ class __FormState extends State<_Form> {
           CustomInput(
             icon: Icons.perm_identity,
             placeholder: 'Nombre',
-            textController: emailCtrl,
+            textController: nameCtrl,
             keyboardType: TextInputType.text,
           ),
           CustomInput(
             icon: Icons.mail_outline_rounded,
             placeholder: 'Correo',
-            textController: nameCtrl,
+            textController: emailCtrl,
             keyboardType: TextInputType.emailAddress,
           ),
           CustomInput(
@@ -74,12 +80,24 @@ class __FormState extends State<_Form> {
             textController: passCtrl,
             isPassword: true,
           ),
-          BottonAzul(
+          BotonAzul(
             text: 'Ingrese',
-            onPressed: () {
-              print(emailCtrl.text);
-              print(passCtrl.text);
-            },
+            onPressed: authService.isLoading
+                ? () => {}
+                : () async {
+                    FocusScope.of(context).unfocus();
+                    final registerOk = await authService.register(
+                      nameCtrl.text.trim(),
+                      emailCtrl.text.trim(),
+                      passCtrl.text.trim(),
+                    );
+                    if (registerOk == true) {
+                      Future.microtask(() => Navigator.pushReplacementNamed(context, 'users'));
+                    } else {
+                      Future.microtask(
+                          () => ShowAlert(context, 'Registro incorrecto', '$registerOk'));
+                    }
+                  },
           )
         ],
       ),

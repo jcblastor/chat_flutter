@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 
 import 'package:chat_app/models/models.dart';
-import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
+import 'package:chat_app/services/services.dart';
 
 class UsersScreen extends StatefulWidget {
   const UsersScreen({Key? key}) : super(key: key);
@@ -23,13 +25,21 @@ class _UsersScreenState extends State<UsersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final user = authService.user;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('My name', style: TextStyle(color: Colors.black54)),
+        title: Text(user.name, style: const TextStyle(color: Colors.black54)),
         backgroundColor: Colors.white,
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, 'login');
+
+            //AuthService.deleteToken() con esto tambien podemos cerrar sesion si no queremos utilizar provider;
+            authService.logout();
+          },
           icon: const Icon(Icons.exit_to_app),
           color: Colors.black54,
         ),

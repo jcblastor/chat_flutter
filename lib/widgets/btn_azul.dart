@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class BottonAzul extends StatelessWidget {
+import '../services/services.dart';
+
+class BotonAzul extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final Function onPressed;
 
-  const BottonAzul({
+  const BotonAzul({
     Key? key,
     required this.text,
     required this.onPressed,
@@ -12,19 +15,24 @@ class BottonAzul extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialButton(
-      elevation: 2,
-      highlightElevation: 5,
-      color: Colors.blue,
-      shape: const StadiumBorder(),
-      onPressed: onPressed,
-      child: Container(
+    final authService = Provider.of<AuthService>(context);
+
+    return ElevatedButton(
+      style: ButtonStyle(
+        backgroundColor: authService.isLoading
+            ? MaterialStateProperty.all(Colors.grey)
+            : MaterialStateProperty.all(Colors.blue),
+        elevation: MaterialStateProperty.all(2),
+        shape: MaterialStateProperty.all(const StadiumBorder()),
+      ),
+      onPressed: () => onPressed(),
+      child: SizedBox(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 5),
+        height: 40,
         child: Center(
           child: Text(
             text,
-            style: const TextStyle(color: Colors.white, fontSize: 18),
+            style: const TextStyle(color: Colors.white, fontSize: 17),
           ),
         ),
       ),
